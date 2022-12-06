@@ -4,6 +4,7 @@ import pandas as pd
 import itertools, pyclustering, pylab, ast, random
 from pyclustering.cluster import xmeans, kmeans
 from matplotlib import pyplot as plt
+from est_xmeans import *
 
 # 読み込み
 def read_parent(cycle: int, file_pass: str):
@@ -150,8 +151,6 @@ def stack_ratio_transition(clusters: list, elites_num: int, cycle_num: int):
     return x, y
 
 
-from est_xmeans import *
-
 # エリートを対戦により評価する
 def buttle_double(params: list, enemy_params: list, enemy_agent=None) -> float:
     # return random.uniform(0, 1)  # テスト用
@@ -181,10 +180,7 @@ def buttle_double(params: list, enemy_params: list, enemy_agent=None) -> float:
         else:
             if enemy_agent == None:
                 action = spurious_search_action(
-                    state,
-                    enemy_ev_func,
-                    estimate.sec_est_val_and_coo,
-                    3,
+                    state, enemy_ev_func, estimate.sec_est_val_and_coo, 3,
                 )
             else:
                 action = enemy_agent(state)
@@ -208,10 +204,7 @@ def buttle_double(params: list, enemy_params: list, enemy_agent=None) -> float:
         if state.is_first_player():
             if enemy_agent == None:
                 action = spurious_search_action(
-                    state,
-                    enemy_ev_func,
-                    estimate.fst_est_val_and_coo,
-                    3,
+                    state, enemy_ev_func, estimate.fst_est_val_and_coo, 3,
                 )
             else:
                 action = enemy_agent(state)
@@ -295,10 +288,7 @@ def evaluate_elite(params: list, enemy_params: list, enemy_agent=None) -> float:
                     else:
                         if enemy_agent == None:
                             action = spurious_search_action(
-                                state,
-                                enemy_ev_func,
-                                estimate.sec_est_val_and_coo,
-                                3,
+                                state, enemy_ev_func, estimate.sec_est_val_and_coo, 3,
                             )
                         else:
                             action = enemy_agent(state)
@@ -322,10 +312,7 @@ def evaluate_elite(params: list, enemy_params: list, enemy_agent=None) -> float:
                     if state.is_first_player():
                         if enemy_agent == None:
                             action = spurious_search_action(
-                                state,
-                                enemy_ev_func,
-                                estimate.fst_est_val_and_coo,
-                                3,
+                                state, enemy_ev_func, estimate.fst_est_val_and_coo, 3,
                             )
                         else:
                             action = enemy_agent(state)
