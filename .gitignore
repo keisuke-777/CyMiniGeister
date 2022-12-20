@@ -9,3 +9,5 @@ csv_data
 csv_data/*
 experiments/data
 plot_data/*
+*.c
+*.so
