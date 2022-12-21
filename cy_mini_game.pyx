@@ -6,6 +6,7 @@
 import random, math
 cimport numpy as np
 from libcpp cimport bool
+from libc.stdlib cimport rand, RAND_MAX
 
 # ゲームの状態
 cdef class State:
@@ -102,7 +103,7 @@ cdef class State:
     def legal_actions(self):
         return self.cy_legal_actions()
 
-    cdef cy_legal_actions(self):
+    cpdef cy_legal_actions(self):
         cdef list actions = []
         cdef int p
         for p in range(20):
@@ -117,21 +118,45 @@ cdef class State:
             actions.extend([14])  # 3*4 + 2
         return actions
 
-    # 駒の移動時の合法手のリストの取得
-    cdef legal_actions_pos(self, int position):
-        cdef list actions = []
+    # # 駒の移動時の合法手のリストの取得
+    # cdef legal_actions_pos(self, position):
+    #     cdef list actions = []
+    #     cdef int x = position % 4
+    #     cdef int y = position // 4
+    #     if y != 4 and self.pieces[position + 4] == 0:  # 下端でない and 下に自分の駒がいない
+    #         actions.append(self.position_to_action(position, 0))
+    #     if x != 0 and self.pieces[position - 1] == 0:  # 左端でない and 左に自分の駒がいない
+    #         actions.append(self.position_to_action(position, 1))
+    #     if y != 0 and self.pieces[position - 4] == 0:  # 上端でない and 上に自分の駒がいない
+    #         actions.append(self.position_to_action(position, 2))
+    #     if x != 3 and self.pieces[position + 1] == 0:  # 右端でない and 右に自分の駒がいない
+    #         actions.append(self.position_to_action(position, 3))
+    #     # 青駒のゴール行動は例外的にlegal_actionsで処理する(ここでは処理しない)
+    #     return actions
+
+    cdef legal_actions_pos(self, position):
+        # リストを使わずに、直接配列に格納するようにする
+        cdef int actions[4]
+        cdef int n_actions = 0  # 配列に格納した要素数
         cdef int x = position % 4
         cdef int y = position // 4
         if y != 4 and self.pieces[position + 4] == 0:  # 下端でない and 下に自分の駒がいない
-            actions.append(self.position_to_action(position, 0))
+            actions[n_actions] = position * 4
+            n_actions += 1
         if x != 0 and self.pieces[position - 1] == 0:  # 左端でない and 左に自分の駒がいない
-            actions.append(self.position_to_action(position, 1))
+            actions[n_actions] = position * 4 + 1
+            n_actions += 1
         if y != 0 and self.pieces[position - 4] == 0:  # 上端でない and 上に自分の駒がいない
-            actions.append(self.position_to_action(position, 2))
+            actions[n_actions] = position * 4 + 2
+            n_actions += 1
         if x != 3 and self.pieces[position + 1] == 0:  # 右端でない and 右に自分の駒がいない
-            actions.append(self.position_to_action(position, 3))
+            actions[n_actions] = position * 4 + 3
+            n_actions += 1
         # 青駒のゴール行動は例外的にlegal_actionsで処理する(ここでは処理しない)
-        return actions
+        cdef list result = [actions[i] for i in range(n_actions)]
+        return result
+        # return actions[:n_actions]  # 最後に要素数を指定して返す
+
 
     # 次の状態の取得
     def next(self, action):
@@ -216,29 +241,17 @@ cdef class State:
 
 
 # ランダムで行動選択
-def random_action(state):
-    legal_actions = state.legal_actions()
-    return legal_actions[random.randint(0, len(legal_actions) - 1)]
+cpdef random_action(state):
+    return cy_random_action(state)
 
-
-# 人間に行動を選択させる
-def human_player_action(state):
-    # 盤面を表示
-    print(state)
-
-    # 入力を待つ(受ける)
-    before_move_place = int(input("Please enter to move piece (左上~右下にかけて0~19) : "))
-    direction = int(input("direction (下0 左1 上2 右3) : "))
-    move = state.position_to_action(before_move_place, direction)
-
-    # 合法手か確認
-    legal_actions = state.legal_actions()
-    if any(elem == move for elem in legal_actions):
-        return move
-
-    # エラー処理(デバッグでしか使わんから適当)
-    print("よくわからんけど非合法手を選んだのでランダム手を選択しました")
-    return legal_actions[random.randint(0, len(legal_actions) - 1)]
+cdef cy_random_action(state):
+    cdef list legal_actions
+    cdef int len_actions
+    cdef int index
+    legal_actions = state.cy_legal_actions()
+    len_actions = len(legal_actions)
+    index = rand() % len_actions
+    return legal_actions[index]
 
 
 # モンテカルロ木探索の行動選択
