@@ -249,17 +249,19 @@ def edit_state_with_board_pat(board_pattern, state, est_val_and_coo):
     for i in range(36):
         my_pieces = state.pieces.copy()
         for j in range(4):
-            if board_pattern[i][j] == 0:
-                my_pieces[my_coo[j]] = 2  # 赤
-            else:
-                my_pieces[my_coo[j]] = 1  # 青
+            if my_coo[j] != -1:  # 死駒でない
+                if board_pattern[i][j] == 0:
+                    my_pieces[my_coo[j]] = 2  # 赤
+                else:
+                    my_pieces[my_coo[j]] = 1  # 青
         en_pieces = state.enemy_pieces.copy()
         for j in range(4):
-            if board_pattern[i][4 + j] == 0:
-                # 座標の反転処理
-                en_pieces[19 - en_coo[j]] = 2
-            else:
-                en_pieces[19 - en_coo[j]] = 1
+            if en_coo[j] != -1:  # 死駒でない
+                if board_pattern[i][4 + j] == 0:
+                    # 座標の反転処理
+                    en_pieces[19 - en_coo[j]] = 2
+                else:
+                    en_pieces[19 - en_coo[j]] = 1
         edit_state = State(my_pieces, en_pieces, state.depth)
         state_pattern[i] = edit_state
     return state_pattern
