@@ -11,3 +11,4 @@ experiments/data
 plot_data/*
 *.c
 *.so
+*.cpp
