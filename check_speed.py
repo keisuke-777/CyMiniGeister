@@ -77,7 +77,21 @@ if __name__ == "__main__":
     # time_end = time.perf_counter()
     # print("Cython:", time_end - time_sta)
 
-    from spurious_mcts import *
+    # ### 通常のsp_mcts ###
+    # from spurious_mcts import *
+
+    # state = State()
+    # est_val_and_coo = [
+    #     [[1.0, 0.2, 0.3, 0.5], [13, 14, 17, 18]],
+    #     [[0.5, 0.7, 0.3, 0.5], [1, 2, 5, 6]],
+    # ]
+    # time_sta = time.perf_counter()
+    # spurious_mcts_action(state, est_val_and_coo, 300)
+    # time_end = time.perf_counter()
+    # print("sp_mcts:", time_end - time_sta)
+
+    ### cythonizeしたsp_mcts ###
+    from cy_spurious_mcts import *
 
     state = State()
     est_val_and_coo = [
@@ -87,15 +101,16 @@ if __name__ == "__main__":
     time_sta = time.perf_counter()
     spurious_mcts_action(state, est_val_and_coo, 300)
     time_end = time.perf_counter()
-    print("sp_mcts:", time_end - time_sta)
+    print("cy_sp_mcts:", time_end - time_sta)
 
-    test_enemy_params = [
-        [9, 5, 5, 3, 3, 2, 2, 1, 1, 0],
-        [3, 5, 5, 9, 3, 5, 2, 3, 1, 2],
-        [0.2, 0.4, 0.05, 0.4, -0.1],
-    ]
-    enemy_ev_func = create_ev_func(test_enemy_params)
-    time_sta = time.perf_counter()
-    action = spurious_search_action(state, enemy_ev_func, est_val_and_coo, 7)
-    time_end = time.perf_counter()
-    print("sp_ab:", time_end - time_sta)
+    # ### 通常のsp_ab ###
+    # test_enemy_params = [
+    #     [9, 5, 5, 3, 3, 2, 2, 1, 1, 0],
+    #     [3, 5, 5, 9, 3, 5, 2, 3, 1, 2],
+    #     [0.2, 0.4, 0.05, 0.4, -0.1],
+    # ]
+    # enemy_ev_func = create_ev_func(test_enemy_params)
+    # time_sta = time.perf_counter()
+    # action = spurious_search_action(state, enemy_ev_func, est_val_and_coo, 3)
+    # time_end = time.perf_counter()
+    # print("sp_ab:", time_end - time_sta)
