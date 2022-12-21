@@ -108,7 +108,7 @@ class node:
 
 def spurious_mcts_action(state, est_val_and_coo, search_num=300):
     # ルートノードの生成
-    root_node = node(state, True)
+    root_node = node(-1, True)
     root_node.expand(state)
 
     # ルートノードを評価 (rangeを変化させると評価回数を変化させられる)
