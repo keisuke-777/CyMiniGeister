@@ -1,7 +1,11 @@
 # SpuriousMCTS、永久、進化計算
 import random, datetime, copy, csv, os, sys, itertools, pickle
 from mini_game import State
-from SpuriousSearch import calc_coo_of_destination_from_action, create_ev_func
+from SpuriousSearch import (
+    calc_coo_of_destination_from_action,
+    create_ev_func,
+    random_action,
+)
 from spurious_mcts import *
 
 # 他のマスとの距離を示すmap10*10
@@ -222,12 +226,12 @@ class Estimate:
             adjacent_pieces_list.remove(bef_coo)
 
         # ゴールできるのにしなかった（評価関数に関係なく確定で赤駒）
-        if 0 in cp_est_val_and_coo[my][1] and action != 2:
-            goal_i = cp_est_val_and_coo[my][1].index(0)
-            cp_est_val_and_coo[my][0][goal_i] = 0
-        if 3 in cp_est_val_and_coo[my][1] and action != 14:
-            goal_i = cp_est_val_and_coo[my][1].index(3)
-            cp_est_val_and_coo[my][0][goal_i] = 0
+        # if 0 in cp_est_val_and_coo[my][1] and action != 2:
+        #     goal_i = cp_est_val_and_coo[my][1].index(0)
+        #     cp_est_val_and_coo[my][0][goal_i] = 0
+        # if 3 in cp_est_val_and_coo[my][1] and action != 14:
+        #     goal_i = cp_est_val_and_coo[my][1].index(3)
+        #     cp_est_val_and_coo[my][0][goal_i] = 0
 
         # 座標の更新
         cp_est_val_and_coo[my][1][update_est_index] = aft_coo
