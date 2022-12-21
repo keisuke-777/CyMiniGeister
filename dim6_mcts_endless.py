@@ -6,7 +6,10 @@ from SpuriousSearch import (
     create_ev_func,
     random_action,
 )
+
 from spurious_mcts import *
+
+# from cy_spurious_mcts import *
 
 # 他のマスとの距離を示すmap10*10
 DISTANCE_MAP = [
@@ -362,6 +365,8 @@ def create_pieces_matrix(piece_list: list) -> list:
 # paramが最低限の強さを持つか確認する
 # ランダムエージェントと対戦して勝率が高いものを合格とする
 def is_exceeds_standard(params: list, standard_winning_rate: float) -> bool:
+    return True  # 実行時間を早めるためにランダムエージェントと対戦させて間引くのをやめる
+
     ev_func = create_ev_func(params)
     buttle_piece_lists = create_buttle_piece_lists()
     range_num = 1
@@ -777,7 +782,7 @@ def create_new_generations_from_elites(
 NUM_OF_SAVES = 100
 NUM_OF_ELITES = 30
 STANDARD_WINNING_RATE = 0.9  # 強さの閾値（ランダム個体へ保証される勝率）
-MUTATION_PROBABILITY = 0.9
+MUTATION_PROBABILITY = 0.2
 
 import pandas as pd
 import ast
