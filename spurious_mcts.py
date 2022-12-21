@@ -116,6 +116,10 @@ def spurious_mcts_action(state, est_val_and_coo, search_num=300):
     state_pattern, correct_pattern_list, board_pattern_prob = create_all_pattern_state(
         state, est_val_and_coo
     )
+    # 誤差や死駒の反映が遅れることによって、合計が1から大きくずれることがあるため正規化する
+    board_pattern_prob = np.array(board_pattern_prob, dtype=np.float64) / np.sum(
+        board_pattern_prob
+    )
     for _ in range(search_num):
         # 確率に従って探索で使う盤面を選ぶ
         choice_index = np.random.choice(36, p=board_pattern_prob)
