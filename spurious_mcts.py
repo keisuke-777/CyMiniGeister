@@ -1,5 +1,5 @@
 import numpy as np
-import math
+import math, random
 from mini_game import State, random_action
 
 # モンテカルロ木探索のノード
@@ -120,11 +120,12 @@ def spurious_mcts_action(state, est_val_and_coo, search_num=300):
     board_pattern_prob = np.array(board_pattern_prob, dtype=np.float64) / np.sum(
         board_pattern_prob
     )
-    for _ in range(search_num):
+
+    choice_indexes = random.choices(range(36), k=search_num, weights=board_pattern_prob)
+    for i in range(search_num):
         # 確率に従って探索で使う盤面を選ぶ
-        choice_index = np.random.choice(36, p=board_pattern_prob)
-        rdm_state = state_pattern[choice_index]
-        is_real = correct_pattern_list[choice_index]
+        rdm_state = state_pattern[choice_indexes[i]]
+        is_real = correct_pattern_list[choice_indexes[i]]
         root_node.evaluate(rdm_state, is_real)
 
     # 試行回数の最大値を持つ行動を返す
