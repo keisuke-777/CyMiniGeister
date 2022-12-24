@@ -106,7 +106,10 @@ class node:
             return self.child_nodes[argmax(ucb1_values)]
 
 
-def spurious_mcts_action(state, est_val_and_coo, search_num=300):
+def spurious_mcts_action(state, est_val_and_coo, search_n=300):
+    # search_num = search_n
+    search_num = 30  # とりあえず高速処理用
+
     # ルートノードの生成
     root_node = node(-1, True)
     root_node.expand(state)
