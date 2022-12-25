@@ -12,3 +12,6 @@ plot_data/*
 *.c
 *.so
 *.cpp
+
+build
+build/*
