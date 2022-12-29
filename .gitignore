@@ -15,3 +15,5 @@ plot_data/*
 
 build
 build/*
+
+*.h5
