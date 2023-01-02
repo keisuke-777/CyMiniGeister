@@ -302,7 +302,7 @@ if __name__ == "__main__":
     state = State()
 
     # モンテカルロ木探索で行動取得を行う関数の生成
-    next_action = spurious_alphazero_action(model, 300)
+    next_action = spurious_alphazero_action(model, 30)
     test_est_val_and_coo = [
         [[1.0, 0.2, 0.3, 0.5], [13, 14, 17, 18]],
         [[0.5, 0.7, 0.3, 0.5], [1, 2, 5, 6]],
