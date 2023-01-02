@@ -303,6 +303,10 @@ if __name__ == "__main__":
 
     # モンテカルロ木探索で行動取得を行う関数の生成
     next_action = spurious_alphazero_action(model, 300)
+    test_est_val_and_coo = [
+        [[1.0, 0.2, 0.3, 0.5], [13, 14, 17, 18]],
+        [[0.5, 0.7, 0.3, 0.5], [1, 2, 5, 6]],
+    ]
 
     # ゲーム終了までループ
     while True:
@@ -311,7 +315,7 @@ if __name__ == "__main__":
             break
 
         # 行動の取得
-        action = next_action(state)
+        action = next_action(state, test_est_val_and_coo)
 
         # 次の状態の取得
         state = state.next(action)
