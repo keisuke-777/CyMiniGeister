@@ -7,6 +7,7 @@ from SpuriousSearch import (
     random_action,
 )
 from rl_mcts import *
+from typing import Callable
 
 # from cy_spurious_mcts import *
 
@@ -453,7 +454,10 @@ def create_many_eval_func(n: int, standard_winning_rate: float) -> list:
 
 # エリートを対戦により評価する
 def evaluate_elite(
-    params: list, enemy_params: list, sp_alphazero_action: function, enemy_agent=None
+    params: list,
+    enemy_params: list,
+    sp_alphazero_action: Callable[[State, list], int],
+    enemy_agent=None,
 ) -> float:
     # return random.uniform(0, 1)  # テスト用
     # paramsから評価関数を作成
@@ -534,7 +538,10 @@ def evaluate_elite(
 
 # 先手後手を入れ替えて2回だけ対戦する
 def buttle_double(
-    params: list, enemy_params: list, sp_alphazero_action: function, enemy_agent=None
+    params: list,
+    enemy_params: list,
+    sp_alphazero_action: Callable[[State, list], int],
+    enemy_agent=None,
 ) -> float:
     # return random.uniform(0, 1)  # テスト用
     # paramsから評価関数を作成
@@ -594,7 +601,9 @@ def buttle_double(
     return num_of_wins
 
 
-def league_match(params_list: list, sp_alphazero_action: function) -> list:
+def league_match(
+    params_list: list, sp_alphazero_action: Callable[[State, list], int]
+) -> list:
     length = len(params_list)
     length_list = list(range(length))
     vs_result = np.zeros((length, length))
@@ -826,7 +835,9 @@ def create_six_est_from_ev_func(ev_func: list) -> list:
     return six_est
 
 
-def kei_neat(cycle: int, file_pass: str, sp_alphazero_action: function) -> None:
+def kei_neat(
+    cycle: int, file_pass: str, sp_alphazero_action: Callable[[State, list], int]
+) -> None:
     # 適応度の高い個体をn個体取得
     n = NUM_OF_ELITES
     _, eval_lists = read_parent(cycle, file_pass)
