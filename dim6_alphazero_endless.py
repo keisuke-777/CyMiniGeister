@@ -1,5 +1,5 @@
 # SpuriousMCTS、永久、進化計算
-import random, datetime, copy, csv, os, sys, itertools, pickle
+import random, datetime, copy, csv, os, sys, itertools, pickle, ast
 from mini_game import State
 from SpuriousSearch import (
     calc_coo_of_destination_from_action,
@@ -8,6 +8,7 @@ from SpuriousSearch import (
 )
 from rl_mcts import *
 from typing import Callable
+import pandas as pd
 
 # from cy_spurious_mcts import *
 
@@ -797,9 +798,6 @@ NUM_OF_SAVES = 100
 NUM_OF_ELITES = 30
 STANDARD_WINNING_RATE = 0.9  # 強さの閾値（ランダム個体へ保証される勝率）
 MUTATION_PROBABILITY = 0.2
-
-import pandas as pd
-import ast
 
 # 読み込み
 def read_parent(cycle: int, file_pass: str):

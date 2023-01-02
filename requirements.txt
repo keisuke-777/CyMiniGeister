@@ -7,3 +7,5 @@ timeout-decorator
 mojimoji
 matplotlib
 pyclustering
+pandas
+ast
