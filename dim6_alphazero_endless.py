@@ -920,4 +920,4 @@ if __name__ == "__main__":
     # ひたすらkei_neatを実行
     for i in range(10000):
         print("\r第" + str(i) + "世代", end="")
-        kei_neat(i, file_pass)
+        kei_neat(i, file_pass, sp_alphazero_action)
