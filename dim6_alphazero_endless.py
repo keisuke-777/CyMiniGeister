@@ -537,18 +537,13 @@ def evaluate_elite(
     return winning_rate
 
 
-# 先手後手を入れ替えて2回だけ対戦する
-def buttle_double(
+# 1回だけ対戦する
+def buttle_single(
     params: list,
     enemy_params: list,
     sp_alphazero_action: Callable[[State, list], int],
     enemy_agent=None,
 ) -> float:
-    # return random.uniform(0, 1)  # テスト用
-    # paramsから評価関数を作成
-    ev_func = create_ev_func(params)
-    # 対戦相手の評価関数を生成
-    enemy_ev_func = create_ev_func(enemy_params)
     state = State()
     estimate = Estimate(params[2], enemy_params[2])  # 推測を司る
     num_of_wins = 0.0
@@ -573,53 +568,76 @@ def buttle_double(
                 action = enemy_agent(state)
             estimate.double_update_from_action(action, state, False)
         state = state.next(action)
-
-    # 先手後手を入れ替えて対戦（盤面はそのまま）
-    # FIXME:これだと盤面そのままじゃない
-    state = State()
-    estimate = Estimate(enemy_params[2], params[2])  # 推測を司る
-    while True:
-        if state.is_done():
-            if state.is_lose():
-                if state.depth % 2 == 0:
-                    num_of_wins += 1  # 後手勝ち
-            else:
-                num_of_wins += 0.5
-            break
-
-        # 行動の取得
-        if state.is_first_player():
-            if enemy_agent == None:
-                action = sp_alphazero_action(state, estimate.fst_est_val_and_coo)
-            else:
-                action = enemy_agent(state)
-            estimate.double_update_from_action(action, state, True)
-        else:
-            action = sp_alphazero_action(state, estimate.sec_est_val_and_coo)
-            estimate.double_update_from_action(action, state, False)
-        state = state.next(action)
-
     return num_of_wins
 
 
-def league_match(
-    params_list: list, sp_alphazero_action: Callable[[State, list], int]
-) -> list:
-    length = len(params_list)
+# def league_match(
+#     params_list: list, sp_alphazero_action: Callable[[State, list], int]
+# ) -> list:
+#     length = len(params_list)
+#     length_list = list(range(length))
+#     vs_result = np.zeros((length, length))
+#     vs_tuples = itertools.combinations(length_list, 2)
+#     for vs_tp in vs_tuples:
+#         result = buttle_double(
+#             params_list[vs_tp[0]], params_list[vs_tp[1]], sp_alphazero_action
+#         )
+#         vs_result[vs_tp[0]][vs_tp[1]] = result
+#         vs_result[vs_tp[1]][vs_tp[0]] = 2 - result
+
+#     score_list = [0] * 100
+#     for i in range(length):
+#         # 勝率（％）
+#         score_list[i] = int(np.sum(vs_result[i])) / 2
+#     return score_list
+
+
+def small_league(
+    small_params_list: list,
+    sp_alphazero_action: Callable[[State, list], int],
+    group_size: int,
+):
+    length = len(small_params_list)
     length_list = list(range(length))
     vs_result = np.zeros((length, length))
     vs_tuples = itertools.combinations(length_list, 2)
     for vs_tp in vs_tuples:
-        result = buttle_double(
-            params_list[vs_tp[0]], params_list[vs_tp[1]], sp_alphazero_action
+        result = buttle_single(
+            small_params_list[vs_tp[0]],
+            small_params_list[vs_tp[1]],
+            sp_alphazero_action,
         )
         vs_result[vs_tp[0]][vs_tp[1]] = result
-        vs_result[vs_tp[1]][vs_tp[0]] = 2 - result
+        vs_result[vs_tp[1]][vs_tp[0]] = 1 - result
 
-    score_list = [0] * 100
+    sm_score_list = [0] * group_size
     for i in range(length):
         # 勝率（％）
-        score_list[i] = int(np.sum(vs_result[i])) / 2
+        sm_score_list[i] = int(np.sum(vs_result[i])) / 2
+    return sm_score_list
+
+
+# n個のグループに分けてリーグ戦をする（対戦数の少ないリーグ戦）
+def league_match(
+    params_list: list,
+    sp_alphazero_action: Callable[[State, list], int],
+    split_num: int = 10,
+) -> list:
+    length = len(params_list)
+    index_list = list(range(100))
+    random.shuffle(index_list)
+    group_size = length // split_num
+    score_list = [0] * 100
+    for i in range(split_num):
+        small_index = index_list[i * 10 : (i + 1) * 10]
+        small_params_list = []
+        for si in small_index:
+            small_params_list.append(params_list[si])
+        sm_score_list = small_league(small_params_list, sp_alphazero_action, group_size)
+        for index, si in enumerate(small_index):
+            score_list[si] = sm_score_list[index]
+
+    # 勝率を返す
     return score_list
 
 
@@ -878,7 +896,7 @@ if __name__ == "__main__":
     model = load_model(str(path))
 
     # 指し手を決める関数のインスタンスを作成
-    sp_alphazero_action = spurious_alphazero_action(model, 30)
+    sp_alphazero_action = spurious_alphazero_action(model, 15)
 
     # 1.評価関数をランダムに100個生成
     eval_lists = create_many_eval_func(NUM_OF_SAVES, STANDARD_WINNING_RATE)
